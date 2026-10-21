@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import platform
 import socket
 import subprocess
@@ -8,6 +9,7 @@ from datetime import datetime
 from tkinter import messagebox
 import customtkinter as ctk
 import psutil
+from PIL import Image
 
 VERSION = "0.1.0"
 BG, PANEL, MUTED, ACCENT = "#0B1020", "#151D31", "#A0AFCB", "#5A8BFF"
@@ -56,6 +58,7 @@ class PCUltimate(ctk.CTk):
         self.geometry("1080x730")
         self.minsize(860, 640)
         self.configure(fg_color=BG)
+        self.set_brand_icon()
         self.running = True
         self.build_ui()
         psutil.cpu_percent(interval=None)
@@ -63,12 +66,27 @@ class PCUltimate(ctk.CTk):
         threading.Thread(target=self.load_hardware, daemon=True).start()
         self.protocol("WM_DELETE_WINDOW", self.close)
 
+    def set_brand_icon(self):
+        try:
+            icon_path = self.asset_path("pcultimate-icon.png")
+            from PIL import ImageTk
+            self._window_icon = ImageTk.PhotoImage(Image.open(icon_path))
+            self.iconphoto(True, self._window_icon)
+        except (OSError, RuntimeError):
+            pass
+
+    @staticmethod
+    def asset_path(name):
+        base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+        return base / "assets" / name
+
     def build_ui(self):
         root = ctk.CTkScrollableFrame(self, fg_color=BG)
         root.pack(fill="both", expand=True, padx=22, pady=18)
         top = ctk.CTkFrame(root, fg_color="transparent")
         top.pack(fill="x", pady=(0, 23))
-        ctk.CTkLabel(top, text="◈  PCULTIMATE", font=ctk.CTkFont(size=28, weight="bold")).pack(side="left")
+        self.brand_image = ctk.CTkImage(light_image=Image.open(self.asset_path("pcultimate-logo.png")), dark_image=Image.open(self.asset_path("pcultimate-logo.png")), size=(280, 73))
+        ctk.CTkLabel(top, text="", image=self.brand_image).pack(side="left")
         ctk.CTkLabel(top, text="SYSTEM DASHBOARD  •  v" + VERSION, text_color=MUTED).pack(side="right")
         ctk.CTkLabel(root, text="Your PC at a glance", font=ctk.CTkFont(size=23, weight="bold")).pack(anchor="w")
         ctk.CTkLabel(root, text="Live performance and hardware information", text_color=MUTED).pack(anchor="w", pady=(3, 20))
