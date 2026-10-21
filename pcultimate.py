@@ -178,6 +178,8 @@ class PCUltimate(ctk.CTk):
         try:
             if target.startswith("ms-settings:"):
                 os.startfile(target)
+            elif target.lower().endswith(".msc"):
+                subprocess.Popen(["mmc.exe", target], shell=False)
             else:
                 subprocess.Popen([target], shell=False)
         except OSError as exc:
