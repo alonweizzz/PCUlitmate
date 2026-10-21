@@ -1,10 +1,10 @@
 #define AppName "PCULTIMATE"
-#define AppVersion "0.1.0"
+#define AppVersion "0.2.0"
 [Setup]
 AppId={{A7D25C2A-948B-48D4-BAF7-CF314F98F10A}
 AppName={#AppName}
 AppVersion={#AppVersion}
-DefaultDirName={autopf}\PCULTIMATE
+DefaultDirName={localappdata}\Programs\PCULTIMATE
 DefaultGroupName=PCULTIMATE
 OutputDir=dist
 OutputBaseFilename=PCULTIMATE-Setup
@@ -16,6 +16,7 @@ WizardStyle=modern
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
+CloseApplications=yes
 [Files]
 Source: "dist\PCULTIMATE.exe"; DestDir: "{app}"; Flags: ignoreversion
 [Icons]
