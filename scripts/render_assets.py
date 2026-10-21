@@ -1,10 +1,21 @@
+"""Convert branding SVG to PNG/ICO using Windows built-in SVG rendering."""
 from pathlib import Path
-import cairosvg
+import subprocess
 from PIL import Image
 
-assets = Path("assets")
-for name in ("pcultimate-icon", "pcultimate-logo"):
-    cairosvg.svg2png(url=str(assets / f"{name}.svg"), write_to=str(assets / f"{name}.png"),
-                     output_width=512 if name.endswith("icon") else 1150)
-image = Image.open(assets / "pcultimate-icon.png").convert("RGBA")
-image.save(assets / "pcultimate.ico", format="ICO", sizes=[(16,16),(24,24),(32,32),(48,48),(64,64),(128,128),(256,256)])
+assets = Path("assets").resolve()
+ps = r'''
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Runtime.WindowsRuntime
+[Windows.Storage.StorageFile,Windows.Storage,ContentType=WindowsRuntime] | Out-Null
+[Windows.Data.Xml.Dom.XmlDocument,Windows.Data.Xml.Dom.XmlDocument,ContentType=WindowsRuntime] | Out-Null
+[Windows.UI.Xaml.Media.Imaging.SvgImageSource,Windows.UI.Xaml,ContentType=WindowsRuntime] | Out-Null
+'''
+# Windows runners ship ImageMagick; SVG conversion uses its bundled renderer.
+for name, width in (("pcultimate-icon", 512), ("pcultimate-logo", 1150)):
+    source = assets / (name + ".svg")
+    output = assets / (name + ".png")
+    subprocess.run(["magick", "-background", "none", "-density", "192",
+                    str(source), "-resize", f"{width}x", str(output)], check=True)
+icon = Image.open(assets / "pcultimate-icon.png").convert("RGBA")
+icon.save(assets / "pcultimate.ico", sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])
