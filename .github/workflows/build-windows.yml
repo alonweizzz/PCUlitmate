@@ -1,4 +1,4 @@
-name: Build Windows EXE
+name: Build Windows Installer
 
 on:
   push:
@@ -17,10 +17,16 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: python -m pip install -r requirements.txt
+      - name: Render branding assets
+        run: |
+          python -m pip install cairosvg pillow
+          python scripts/render_assets.py
       - name: Build executable
-        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name PCULTIMATE pcultimate.py
+        run: python -m PyInstaller --noconfirm --clean --onefile --windowed --name PCULTIMATE --icon assets/pcultimate.ico --add-data "assets/pcultimate-logo.png;assets" --add-data "assets/pcultimate-icon.png;assets" pcultimate.py
+      - name: Build installer with Inno Setup
+        run: '& "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss'
       - uses: actions/upload-artifact@v4
         with:
-          name: PCULTIMATE-Windows
-          path: dist/PCULTIMATE.exe
+          name: PCULTIMATE-Installer
+          path: dist/PCULTIMATE-Setup.exe
           if-no-files-found: error
