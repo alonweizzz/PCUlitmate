@@ -1,5 +1,10 @@
 # PCULTIMATE
 
+![PCULTIMATE logo](assets/pcultimate-logo.svg)
+
+![PCULTIMATE app icon](assets/pcultimate-icon.svg)
+
+
 Windows 10/11 desktop PC dashboard, version 0.1.0.
 
 ## Features
